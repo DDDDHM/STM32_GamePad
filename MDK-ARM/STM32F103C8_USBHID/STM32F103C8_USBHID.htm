@@ -3,7 +3,7 @@
 <title>Static Call Graph - [STM32F103C8_USBHID\STM32F103C8_USBHID.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image STM32F103C8_USBHID\STM32F103C8_USBHID.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Tue Aug 29 22:50:46 2023
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed Aug 30 00:29:12 2023
 <BR><P>
 <H3>Maximum Stack Usage =        200 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -932,7 +932,7 @@ Global Symbols
 <P><STRONG><a name="[4a]"></a>SystemInit</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, system_stm32f1xx.o(i.SystemInit))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xb.o(.text)
 </UL>
-<P><STRONG><a name="[be]"></a>TM_USB_HIDDEVICE_DualShock4_Send</STRONG> (Thumb, 156 bytes, Stack size 8 bytes, tm_stm32_usb_hid_device.o(i.TM_USB_HIDDEVICE_DualShock4_Send))
+<P><STRONG><a name="[be]"></a>TM_USB_HIDDEVICE_DualShock4_Send</STRONG> (Thumb, 196 bytes, Stack size 8 bytes, tm_stm32_usb_hid_device.o(i.TM_USB_HIDDEVICE_DualShock4_Send))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = TM_USB_HIDDEVICE_DualShock4_Send &rArr; USBD_CUSTOM_HID_SendReport &rArr; USBD_LL_Transmit &rArr; HAL_PCD_EP_Transmit &rArr; USB_EPStartXfer &rArr; USB_WritePMA
 </UL>
 <BR>[Calls]<UL><LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USBD_CUSTOM_HID_SendReport
@@ -1611,7 +1611,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> usbd_customhid.o(.data)
 </UL>
-<P><STRONG><a name="[c]"></a>USBD_CUSTOM_HID_Setup</STRONG> (Thumb, 218 bytes, Stack size 24 bytes, usbd_customhid.o(i.USBD_CUSTOM_HID_Setup))
+<P><STRONG><a name="[c]"></a>USBD_CUSTOM_HID_Setup</STRONG> (Thumb, 222 bytes, Stack size 24 bytes, usbd_customhid.o(i.USBD_CUSTOM_HID_Setup))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = USBD_CUSTOM_HID_Setup &rArr; USBD_CtlSendData &rArr; USBD_LL_Transmit &rArr; HAL_PCD_EP_Transmit &rArr; USB_EPStartXfer &rArr; USB_WritePMA
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USBD_CtlSendData

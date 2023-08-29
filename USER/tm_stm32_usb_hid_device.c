@@ -235,7 +235,7 @@ TM_USB_HIDDEVICE_Status_t TM_USB_HIDEVICE_DualShock4_StructInit(TM_USB_HIDDEVICE
 }
 
 TM_USB_HIDDEVICE_Status_t TM_USB_HIDDEVICE_DualShock4_Send(TM_USB_HIDDEVICE_DS4_Number_t gamepad_id, TM_USB_HIDDEVICE_DualShock4_t* DS4_Data) {
-	static uint8_t buff[10]; /* 10 bytes long report */
+	static uint8_t buff[64]; /* 10 bytes long report */
 	
 	/* Check status */
 //	if (TM_USB_HIDDEVICE_INT_Status != TM_USB_HIDDEVICE_Status_Connected) {
@@ -279,11 +279,11 @@ TM_USB_HIDDEVICE_Status_t TM_USB_HIDDEVICE_DualShock4_Send(TM_USB_HIDDEVICE_DS4_
 	buff[8] = DS4_Data->L2Trigger;
 	buff[9] = DS4_Data->R2Trigger;
 
-	// buff[30] |= DS4_Data->battery & 0x0f;
-	// buff[33] |= DS4_Data->volumn << 4;	//high 4 bit -> volumn, low 4 bit -> T-PAD(0x00=no data)
+	buff[30] |= DS4_Data->battery & 0x0f;
+	buff[33] |= DS4_Data->volumn << 4;	//high 4 bit -> volumn, low 4 bit -> T-PAD(0x00=no data)
 
 	/* Send to USB gamepad data */
-	USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&buff, 10);
+	USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&buff, 64);
 	
 	/* Return connected */
 	return TM_USB_HIDDEVICE_Status_Connected;
