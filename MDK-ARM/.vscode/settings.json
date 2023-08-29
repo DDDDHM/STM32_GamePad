@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "main.h": "c",
+        "tm_stm32_usb_hid_device.h": "c",
+        "usb_device.h": "c",
+        "usbd_core.h": "c",
+        "usbd_desc.h": "c",
+        "usbd_conf.h": "c",
+        "usbd_ctlreq.h": "c",
+        "usbd_customhid.h": "c",
+        "usbd_custom_hid_if.h": "c"
+    }
+}
