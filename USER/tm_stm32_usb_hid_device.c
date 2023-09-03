@@ -279,6 +279,8 @@ TM_USB_HIDDEVICE_Status_t TM_USB_HIDDEVICE_DualShock4_Send(TM_USB_HIDDEVICE_DS4_
 	buff[8] = DS4_Data->L2Trigger;
 	buff[9] = DS4_Data->R2Trigger;
 
+	buff[12]  = DS4_Data->battery;
+	
 	buff[30] |= DS4_Data->battery & 0x0f;
 	buff[33] |= DS4_Data->volumn << 4;	//high 4 bit -> volumn, low 4 bit -> T-PAD(0x00=no data)
 

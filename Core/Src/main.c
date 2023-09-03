@@ -63,12 +63,15 @@ uint8_t buf[10] = {3, 5, 7, 9, 11, 13, 15, 19};
 uint16_t ADC_buffer[ADC_Channel] = {0};
 uint8_t axis_value[Axis_Channel] = {0};
 uint16_t Trigger_value[Trigger_Channel] = {0};
+uint8_t rx_buf[4];
+uint8_t tx_buf[4] = {0x55, 0x49, 0x48, 0x79};
+int16_t angle, u8angle;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void Key_Scan(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -114,7 +117,7 @@ int main(void)
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_RESET);
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *)&ADC_buffer, ADC_Channel);
-
+  //HAL_UART_Receive_DMA(&huart3, rx_buf, sizeof(rx_buf));
   TM_USB_HIDEVICE_DualShock4_StructInit(&DS4_1);
   /* USER CODE END 2 */
 
@@ -125,8 +128,30 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    Key_Scan();
+    HAL_UART_Receive(&huart3, rx_buf, sizeof(rx_buf), 100);
+    HAL_UART_Transmit(&huart1, tx_buf, sizeof(tx_buf), 100);
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 
+    //方向盘输入，angle值：-5400~5400 -> -127~127
+    if (rx_buf[0] == 0x55)
+    {
+      angle = ((int16_t)rx_buf[2] << 8) + rx_buf[3];
+      if (rx_buf[1] == 1)
+      {
+        angle = -angle;
+      }
+    // 欧卡最大一圈半，赛车最大2700
+    u8angle = angle * 127 / 2700 + 127;
+    if (u8angle > 0xff)
+    {
+      u8angle = 0xff;
+    }
+    else if(u8angle < 0)
+    {
+      u8angle = 0;
+    }
+    }
     for (int i = 0; i < Axis_Channel; i++)
     {
       axis_value[i] = (int8_t)(((int16_t)ADC_buffer[i] >> 4));
@@ -145,17 +170,23 @@ int main(void)
           Trigger_value[i - 4] = 0xff;
       }
     }
-    DS4_1.LeftXAxis = axis_value[1];
+    if(axis_value[1] > 250 || axis_value[1] < 20)
+    {
+      DS4_1.LeftXAxis = axis_value[1];
+    }
+    else
+    {
+      DS4_1.LeftXAxis = (uint8_t)u8angle;
+    }
+    // DS4_1.LeftXAxis = axis_value[1];
     DS4_1.LeftYAxis = axis_value[0];
     DS4_1.RightXAxis = axis_value[3];
     DS4_1.RightYAxis = axis_value[2];
 
     DS4_1.L2Trigger = (uint8_t)Trigger_value[0];
     DS4_1.R2Trigger = (uint8_t)Trigger_value[1];
-
-    //		buf[3] = Gamepad1.LeftXAxis;
-    //		buf[4] = Gamepad1.LeftYAxis;
-
+    DS4_1.L2 = (DS4_1.L2Trigger > 100)? 1:0; //可能导致不灵敏？
+    DS4_1.R2 = (DS4_1.R2Trigger > 100)? 1:0;
     //		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&buf, 7);
     //  	TM_USB_HIDDEVICE_GamepadSend(0x01, &Gamepad1);
 
@@ -212,7 +243,28 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+// PB3~6 方向键
+// PB12~15 形状键
+void Key_Scan(void)
+{
+  DS4_1.Left = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) ? 0 : 1;
+  DS4_1.Up = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_4) ? 0 : 1;
+  DS4_1.right = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) ? 0 : 1;
+  DS4_1.down = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) ? 0 : 1;
 
+  DS4_1.rectangle = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12) ? 0 : 1;
+  DS4_1.Triangle = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13) ? 0 : 1;
+  DS4_1.circle = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14) ? 0 : 1;
+  DS4_1.cross = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15) ? 0 : 1;
+
+  DS4_1.R3 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) ? 0 : 1;
+  DS4_1.L3 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) ? 0 : 1;
+  DS4_1.R1 = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) ? 0 : 1;
+  DS4_1.L1 = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) ? 0 : 1;
+
+  DS4_1.option = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_8) ? 0 : 1;
+  DS4_1.power = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7) ? 0 : 1;
+}
 /* USER CODE END 4 */
 
 /**

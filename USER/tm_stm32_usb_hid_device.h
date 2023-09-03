@@ -220,6 +220,10 @@ typedef struct
 	TM_USB_HIDDEVICE_Button_t L1;		 /*!< Game pad button 12 status. This parameter can be a value of @ref TM_USB_HIDDEVICE_Button_t enumeration */
 	TM_USB_HIDDEVICE_Button_t T_pad;	 /*!< Game pad button 13 status. This parameter can be a value of @ref TM_USB_HIDDEVICE_Button_t enumeration */
 	TM_USB_HIDDEVICE_Button_t power;	 /*!< Game pad button 14 status. This parameter can be a value of @ref TM_USB_HIDDEVICE_Button_t enumeration */
+	TM_USB_HIDDEVICE_Button_t Left;
+	TM_USB_HIDDEVICE_Button_t Up;
+	TM_USB_HIDDEVICE_Button_t right;
+	TM_USB_HIDDEVICE_Button_t down;
 	uint8_t D_PAD;
 	uint8_t LeftXAxis;	/*!< Left joystick X axis */
 	uint8_t LeftYAxis;	/*!< Left joystick Y axis */
