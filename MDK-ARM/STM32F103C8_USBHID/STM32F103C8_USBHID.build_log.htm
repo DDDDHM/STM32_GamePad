@@ -27,47 +27,42 @@ Project File Date:  08/29/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'E:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'STM32F103C8_USBHID'
-compiling tm_stm32_usb_hid_device.c...
 compiling main.c...
-../Core/Src/main.c(188): warning:  #188-D: enumerated type mixed with another type
-      DS4_1.L2 = (DS4_1.L2Trigger > 100)? 1:0; //可能导致不灵敏？
-../Core/Src/main.c(189): warning:  #188-D: enumerated type mixed with another type
-      DS4_1.R2 = (DS4_1.R2Trigger > 100)? 1:0;
-../Core/Src/main.c(193): warning:  #188-D: enumerated type mixed with another type
+../Core/Src/main.c(190): warning:  #188-D: enumerated type mixed with another type
+      DS4_1.L2 = (DS4_1.L2Trigger > 100) ? 1 : 0; // 可能导致不灵敏？
+../Core/Src/main.c(191): warning:  #188-D: enumerated type mixed with another type
+      DS4_1.R2 = (DS4_1.R2Trigger > 100) ? 1 : 0;
+../Core/Src/main.c(195): warning:  #188-D: enumerated type mixed with another type
       TM_USB_HIDDEVICE_DualShock4_Send(0x01, &DS4_1);
-../Core/Src/main.c(250): warning:  #188-D: enumerated type mixed with another type
-    DS4_1.Left = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) ? 0 : 1;
 ../Core/Src/main.c(251): warning:  #188-D: enumerated type mixed with another type
-    DS4_1.Up = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_4) ? 0 : 1;
+    DS4_1.Left = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) ? 0 : 1;
 ../Core/Src/main.c(252): warning:  #188-D: enumerated type mixed with another type
-    DS4_1.right = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) ? 0 : 1;
+    DS4_1.Up = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_4) ? 0 : 1;
 ../Core/Src/main.c(253): warning:  #188-D: enumerated type mixed with another type
+    DS4_1.right = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) ? 0 : 1;
+../Core/Src/main.c(254): warning:  #188-D: enumerated type mixed with another type
     DS4_1.down = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) ? 0 : 1;
-../Core/Src/main.c(255): warning:  #188-D: enumerated type mixed with another type
-    DS4_1.rectangle = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12) ? 0 : 1;
 ../Core/Src/main.c(256): warning:  #188-D: enumerated type mixed with another type
-    DS4_1.Triangle = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13) ? 0 : 1;
+    DS4_1.rectangle = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12) ? 0 : 1;
 ../Core/Src/main.c(257): warning:  #188-D: enumerated type mixed with another type
-    DS4_1.circle = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14) ? 0 : 1;
+    DS4_1.Triangle = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13) ? 0 : 1;
 ../Core/Src/main.c(258): warning:  #188-D: enumerated type mixed with another type
+    DS4_1.circle = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14) ? 0 : 1;
+../Core/Src/main.c(259): warning:  #188-D: enumerated type mixed with another type
     DS4_1.cross = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15) ? 0 : 1;
-../Core/Src/main.c(260): warning:  #188-D: enumerated type mixed with another type
-    DS4_1.R3 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) ? 0 : 1;
 ../Core/Src/main.c(261): warning:  #188-D: enumerated type mixed with another type
-    DS4_1.L3 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) ? 0 : 1;
+    DS4_1.R3 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5) ? 0 : 1;
 ../Core/Src/main.c(262): warning:  #188-D: enumerated type mixed with another type
-    DS4_1.R1 = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) ? 0 : 1;
+    DS4_1.L3 = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) ? 0 : 1;
 ../Core/Src/main.c(263): warning:  #188-D: enumerated type mixed with another type
+    DS4_1.R1 = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) ? 0 : 1;
+../Core/Src/main.c(264): warning:  #188-D: enumerated type mixed with another type
     DS4_1.L1 = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) ? 0 : 1;
-../Core/Src/main.c(265): warning:  #188-D: enumerated type mixed with another type
-    DS4_1.option = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_8) ? 0 : 1;
-../Core/Src/main.c(266): warning:  #188-D: enumerated type mixed with another type
-    DS4_1.power = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7) ? 0 : 1;
-../Core/Src/main.c: 17 warnings, 0 errors
+../Core/Src/main.c: 15 warnings, 0 errors
 linking...
-Program Size: Code=17800 RO-data=292 RW-data=824 ZI-data=3472  
+Program Size: Code=17836 RO-data=292 RW-data=824 ZI-data=3472  
 FromELF: creating hex file...
-"STM32F103C8_USBHID\STM32F103C8_USBHID.axf" - 0 Error(s), 17 Warning(s).
+"STM32F103C8_USBHID\STM32F103C8_USBHID.axf" - 0 Error(s), 15 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -91,7 +86,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.4.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

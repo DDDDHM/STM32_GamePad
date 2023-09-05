@@ -72,6 +72,7 @@ int16_t angle, u8angle;
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void Key_Scan(void);
+void D_PAD(TM_USB_HIDDEVICE_DualShock4_t *p);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -80,9 +81,9 @@ void Key_Scan(void);
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -117,7 +118,7 @@ int main(void)
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_RESET);
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *)&ADC_buffer, ADC_Channel);
-  //HAL_UART_Receive_DMA(&huart3, rx_buf, sizeof(rx_buf));
+  // HAL_UART_Receive_DMA(&huart3, rx_buf, sizeof(rx_buf));
   TM_USB_HIDEVICE_DualShock4_StructInit(&DS4_1);
   /* USER CODE END 2 */
 
@@ -129,11 +130,12 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     Key_Scan();
+    D_PAD(&DS4_1);
     HAL_UART_Receive(&huart3, rx_buf, sizeof(rx_buf), 100);
     HAL_UART_Transmit(&huart1, tx_buf, sizeof(tx_buf), 100);
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 
-    //方向盘输入，angle值：-5400~5400 -> -127~127
+    // 方向盘输入，angle值：-5400~5400 -> -127~127
     if (rx_buf[0] == 0x55)
     {
       angle = ((int16_t)rx_buf[2] << 8) + rx_buf[3];
@@ -141,16 +143,16 @@ int main(void)
       {
         angle = -angle;
       }
-    // 欧卡最大一圈半，赛车最大2700
-    u8angle = angle * 127 / 2700 + 127;
-    if (u8angle > 0xff)
-    {
-      u8angle = 0xff;
-    }
-    else if(u8angle < 0)
-    {
-      u8angle = 0;
-    }
+      // 欧卡最大一圈半，赛车最大2700
+      u8angle = angle * 127 / 2700 + 127;
+      if (u8angle > 0xff)
+      {
+        u8angle = 0xff;
+      }
+      else if (u8angle < 0)
+      {
+        u8angle = 0;
+      }
     }
     for (int i = 0; i < Axis_Channel; i++)
     {
@@ -170,7 +172,7 @@ int main(void)
           Trigger_value[i - 4] = 0xff;
       }
     }
-    if(axis_value[1] > 250 || axis_value[1] < 20)
+    if (axis_value[1] > 250 || axis_value[1] < 20)
     {
       DS4_1.LeftXAxis = axis_value[1];
     }
@@ -185,21 +187,21 @@ int main(void)
 
     DS4_1.L2Trigger = (uint8_t)Trigger_value[0];
     DS4_1.R2Trigger = (uint8_t)Trigger_value[1];
-    DS4_1.L2 = (DS4_1.L2Trigger > 100)? 1:0; //可能导致不灵敏？
-    DS4_1.R2 = (DS4_1.R2Trigger > 100)? 1:0;
+    DS4_1.L2 = (DS4_1.L2Trigger > 100) ? 1 : 0; // 可能导致不灵敏？
+    DS4_1.R2 = (DS4_1.R2Trigger > 100) ? 1 : 0;
     //		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&buf, 7);
     //  	TM_USB_HIDDEVICE_GamepadSend(0x01, &Gamepad1);
 
     TM_USB_HIDDEVICE_DualShock4_Send(0x01, &DS4_1);
-    //HAL_Delay(8);
+    // HAL_Delay(8);
   }
   /* USER CODE END 3 */
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -207,8 +209,8 @@ void SystemClock_Config(void)
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
@@ -221,9 +223,8 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -233,7 +234,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC|RCC_PERIPHCLK_USB;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC | RCC_PERIPHCLK_USB;
   PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
   PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL_DIV1_5;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
@@ -262,15 +263,51 @@ void Key_Scan(void)
   DS4_1.R1 = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) ? 0 : 1;
   DS4_1.L1 = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) ? 0 : 1;
 
-  DS4_1.option = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_8) ? 0 : 1;
-  DS4_1.power = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7) ? 0 : 1;
+  // DS4_1.option = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_8) ? 0 : 1;
+  // DS4_1.power = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7) ? 0 : 1;
+}
+
+void D_PAD(TM_USB_HIDDEVICE_DualShock4_t *p)
+{
+  uint8_t key = 0;
+  key = p->Up + (p->right << 1) + (p->down << 2) + (p->Left << 3);
+  switch (key)
+  {
+  case 1: // 0001 N
+    p->D_PAD = 0;
+    break;
+  case 2: // 0010 E
+    p->D_PAD = 2;
+    break;
+  case 3: // 0011 NE
+    p->D_PAD = 1;
+    break;
+  case 4: // 0100 S
+    p->D_PAD = 4;
+    break;
+  case 6: // 0110 SE
+    p->D_PAD = 3;
+    break;
+  case 8: // 1000 W
+    p->D_PAD = 6;
+    break;
+  case 9: // 1001 NW
+    p->D_PAD = 7;
+    break;
+  case 12: // 1100 SW
+    p->D_PAD = 5;
+    break;
+  default:
+    p->D_PAD = 8;
+    break;
+  }
 }
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -282,14 +319,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
