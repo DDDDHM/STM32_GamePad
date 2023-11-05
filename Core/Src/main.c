@@ -14,7 +14,7 @@
  * the License. You may obtain a copy of the License at:
  *                             www.st.com/SLA0044
  *
- ******************************************************************************
+ *****************************************************************************
  */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
@@ -66,6 +66,7 @@ uint16_t Trigger_value[Trigger_Channel] = {0};
 uint8_t rx_buf[4];
 uint8_t tx_buf[4] = {0x55, 0x49, 0x48, 0x79};
 int16_t angle, u8angle;
+uint8_t init_done = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -73,6 +74,7 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void Key_Scan(void);
 void D_PAD(TM_USB_HIDDEVICE_DualShock4_t *p);
+void Systick_isr(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -81,9 +83,9 @@ void D_PAD(TM_USB_HIDDEVICE_DualShock4_t *p);
 /* USER CODE END 0 */
 
 /**
- * @brief  The application entry point.
- * @retval int
- */
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -96,7 +98,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  SysTick_Config(72000000 / 5000); //72Mhz / 50000 = 144000
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -131,8 +133,8 @@ int main(void)
     /* USER CODE BEGIN 3 */
     Key_Scan();
     D_PAD(&DS4_1);
-    HAL_UART_Receive(&huart3, rx_buf, sizeof(rx_buf), 100);
-    HAL_UART_Transmit(&huart1, tx_buf, sizeof(tx_buf), 100);
+    // HAL_UART_Receive(&huart3, rx_buf, sizeof(rx_buf), 100);
+    // HAL_UART_Transmit(&huart1, tx_buf, sizeof(tx_buf), 100);
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 
     // 方向盘输入，angle值：-5400~5400 -> -127~127
@@ -143,7 +145,7 @@ int main(void)
       {
         angle = -angle;
       }
-      // 欧卡最大一圈半，赛车最大2700
+      // 欧卡�?大一圈半，赛车最�?2700
       u8angle = angle * 127 / 2700 + 127;
       if (u8angle > 0xff)
       {
@@ -180,7 +182,7 @@ int main(void)
     {
       DS4_1.LeftXAxis = (uint8_t)u8angle;
     }
-    // DS4_1.LeftXAxis = axis_value[1];
+    DS4_1.LeftXAxis = axis_value[1];
     DS4_1.LeftYAxis = axis_value[0];
     DS4_1.RightXAxis = axis_value[3];
     DS4_1.RightYAxis = axis_value[2];
@@ -191,17 +193,16 @@ int main(void)
     DS4_1.R2 = (DS4_1.R2Trigger > 100) ? 1 : 0;
     //		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&buf, 7);
     //  	TM_USB_HIDDEVICE_GamepadSend(0x01, &Gamepad1);
-
-    TM_USB_HIDDEVICE_DualShock4_Send(0x01, &DS4_1);
+    init_done = 1;
     // HAL_Delay(8);
   }
   /* USER CODE END 3 */
 }
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -209,8 +210,8 @@ void SystemClock_Config(void)
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Initializes the RCC Oscillators according to the specified parameters
-   * in the RCC_OscInitTypeDef structure.
-   */
+  * in the RCC_OscInitTypeDef structure.
+  */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
@@ -223,8 +224,9 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   /** Initializes the CPU, AHB and APB buses clocks
-   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -234,7 +236,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC | RCC_PERIPHCLK_USB;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC|RCC_PERIPHCLK_USB;
   PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
   PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL_DIV1_5;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
@@ -244,8 +246,8 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-// PB3~6 方向键
-// PB12~15 形状键
+// PB3~6 方向�?
+// PB12~15 形状�?
 void Key_Scan(void)
 {
   DS4_1.Left = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) ? 0 : 1;
@@ -302,12 +304,18 @@ void D_PAD(TM_USB_HIDDEVICE_DualShock4_t *p)
     break;
   }
 }
+
+void Systick_isr(void)
+{
+  if (init_done)
+  TM_USB_HIDDEVICE_DualShock4_Send(0x01, &DS4_1);
+}
 /* USER CODE END 4 */
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -319,14 +327,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
+#ifdef  USE_FULL_ASSERT
 /**
- * @brief  Reports the name of the source file and the source line number
- *         where the assert_param error has occurred.
- * @param  file: pointer to the source file name
- * @param  line: assert_param error line source number
- * @retval None
- */
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */

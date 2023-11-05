@@ -235,7 +235,7 @@ TM_USB_HIDDEVICE_Status_t TM_USB_HIDEVICE_DualShock4_StructInit(TM_USB_HIDDEVICE
 }
 
 TM_USB_HIDDEVICE_Status_t TM_USB_HIDDEVICE_DualShock4_Send(TM_USB_HIDDEVICE_DS4_Number_t gamepad_id, TM_USB_HIDDEVICE_DualShock4_t* DS4_Data) {
-	static uint8_t buff[64]; /* 10 bytes long report */
+	static uint8_t buff[64]; /* 64 bytes long report */
 	
 	/* Check status */
 //	if (TM_USB_HIDDEVICE_INT_Status != TM_USB_HIDDEVICE_Status_Connected) {
@@ -255,7 +255,7 @@ TM_USB_HIDDEVICE_Status_t TM_USB_HIDDEVICE_DualShock4_Send(TM_USB_HIDDEVICE_DS4_
 	buff[4] = DS4_Data->RightYAxis;
 	/* Buttons pressed, byte 1 */
 	// DS4 �� O X �� D-PAD��7=NW	6=W	5=SW	4=S	3=SE	2=E	1=NE	0=N��
-	buff[5] = 0x08;
+	buff[5] = 0x00;
 	buff[5] |= DS4_Data->D_PAD;
 	buff[5] |= DS4_Data->rectangle 	<< 4;	/* Bit 4 */
 	buff[5] |= DS4_Data->cross 	<< 5;	/* Bit 5 */
@@ -281,8 +281,24 @@ TM_USB_HIDDEVICE_Status_t TM_USB_HIDDEVICE_DualShock4_Send(TM_USB_HIDDEVICE_DS4_
 
 	buff[12]  = DS4_Data->battery;
 	
-	buff[30] |= DS4_Data->battery & 0x0f;
-	buff[33] |= DS4_Data->volumn << 4;	//high 4 bit -> volumn, low 4 bit -> T-PAD(0x00=no data)
+	// buff[30] = 0x05;
+	// buff[33] |= DS4_Data->volumn << 4;	//high 4 bit -> volumn, low 4 bit -> T-PAD(0x00=no data)
+
+	buff[30] = 0x19;
+
+	buff[35] = 0x80;
+
+	buff[39] = 0x80;
+
+	buff[44] = 0x80;
+
+	buff[48] = 0x80;
+
+	buff[53] = 0x80;
+
+	buff[57] = 0x80;
+
+	buff[62] = 0x80;
 
 	/* Send to USB gamepad data */
 	USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&buff, 64);

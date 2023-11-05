@@ -1,1 +1,0 @@
-stm32f103c8_usbhid\startup_stm32f103xb.o: startup_stm32f103xb.s
