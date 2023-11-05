@@ -145,7 +145,7 @@ __ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_CfgFSDesc[USB_CUSTOM_HID_CONFIG_DES
   0x00,         /*iConfiguration: Index of string descriptor describing
   the configuration*/
   0xC0,         /*bmAttributes: bus powered */
-  0x32,         /*MaxPower 100 mA: this current is used for detecting Vbus*/
+  0xFA,         /*MaxPower 100 mA: this current is used for detecting Vbus*/
 
   /************** Descriptor of CUSTOM HID interface ****************/
   /* 09 */
@@ -439,6 +439,10 @@ static uint8_t  USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef *pdev,
   uint8_t  *pbuf = NULL;
   uint16_t status_info = 0U;
   uint8_t ret = USBD_OK;
+  uint8_t id12[16] = {0x12,0xc0,0x45,0x12,
+                      0xf2,0x41,0x8c,0x08,
+                      0x25,0x00,0x23,0x64,
+                      0xe0,0xfa,0x43,0x98};
 
   switch (req->bmRequest & USB_REQ_TYPE_MASK)
   {
@@ -465,7 +469,17 @@ static uint8_t  USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef *pdev,
           hhid->IsReportAvailable = 1U;
           USBD_CtlPrepareRx(pdev, hhid->Report_buf, req->wLength);
           break;
-
+        /* Get Report : a0    bmRequest Type
+                        01    GET_REPORT
+                        12    Report ID
+                        03    Feature Report
+                        0000  Interface
+                        0040  Report Length(64)
+        */
+        // Report ID = 0x12: 12 c0 45 12 f2 41 8c 08 25 00 23 64 e0 fa 43 98
+        case CUSTOM_HID_REQ_GET_REPORT:
+          USBD_CtlSendData(pdev, id12, 16U);
+          break;
         default:
           USBD_CtlError(pdev, req);
           ret = USBD_FAIL;

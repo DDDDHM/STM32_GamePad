@@ -193,7 +193,9 @@ int main(void)
     DS4_1.R2 = (DS4_1.R2Trigger > 100) ? 1 : 0;
     //		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t *)&buf, 7);
     //  	TM_USB_HIDDEVICE_GamepadSend(0x01, &Gamepad1);
-    init_done = 1;
+    init_done ++;
+    if(init_done > 101)
+    init_done = 101;
     // HAL_Delay(8);
   }
   /* USER CODE END 3 */
@@ -307,7 +309,7 @@ void D_PAD(TM_USB_HIDDEVICE_DualShock4_t *p)
 
 void Systick_isr(void)
 {
-  if (init_done)
+  if (init_done >= 100)
   TM_USB_HIDDEVICE_DualShock4_Send(0x01, &DS4_1);
 }
 /* USER CODE END 4 */
